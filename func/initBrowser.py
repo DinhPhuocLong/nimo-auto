@@ -128,7 +128,11 @@ class Browser:
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         print('Chạy lại vòng mới: ' + current_time)
-        self.driver.quit()
+        try:
+            self.driver.quit()
+        except:
+            pass
+
 
     def readLiveUrl(self):
         t = threading.Timer(self.time, self.destroyDriver)
@@ -163,62 +167,29 @@ class Browser:
         while True:
             if len(self.driver.window_handles) < int(self.tabDemand) + 1:
                 self.switchToOriginalWindow()
-                # liveUrls = []
-                # for handle in self.driver.window_handles:
-                #     if handle == self.driver.window_handles[0]:
-                #         continue
-                #     try:
-                #         self.driver.switch_to.window(handle)
-                #         liveUrls.append(self.driver.current_url)
-                #     except:
-                #         continue
-                #
-                # if lives[i] not in liveUrls:
-                self.openLiveInNewTab(lives[i])
-                i += 1
+                liveUrls = []
+                for handle in self.driver.window_handles:
+                    if handle == self.driver.window_handles[0]:
+                        continue
+                    try:
+                        self.driver.switch_to.window(handle)
+                        liveUrls.append(self.driver.current_url)
+                    except:
+                        continue
+
+                if lives[i] not in liveUrls:
+                    self.openLiveInNewTab(lives[i])
+            i += 1
             if i == (len(lives) - 1):
                 i = 0
-
-    # def resolveErrorTab(self):
-    #     mainUrl = "https://www.nimo.tv/lives"
-    #     print("processing clear error tab")
-    #     for handle in self.driver.window_handles:
-    #         self.driver.switch_to.window(handle)
-    #         print(self.driver.current_url)
-
 
     def openLiveInNewTab(self, url):
         self.driver.switch_to.new_window('tab')
         self.driver.get(url)
         sleep(int(self.timeTillNextTab))
         self.collectEggs()
-        # result = self.checkIfLiveHasEgg()
-        # print(result)
-        # if not result:
-        #     self.closeTabUsingScript()
-        # else:
-        #     print("tìm thấy trứng và url là " + url)
-        #     self.collectEggs()
 
     def collectEggs(self):
-        # script = "const collectBtn = document.querySelector('.nimo-box-gift__box__btn');" \
-        #          "const boxGift = document.querySelector('.nimo-box-gift__box');" \
-        #          "if(!boxGift) window.close();" \
-        #          "if(collectBtn){" \
-        #          "collectBtn.click();" \
-        #          "}else{" \
-        #          "collectInterval = setInterval(function(){" \
-        #          "const collectButtonInsideInterval = document.querySelector('.nimo-box-gift__box__btn');" \
-        #          "let isBoxGift = document.querySelector('.nimo-room__chatroom__box-gift-item');" \
-        #          "console.log(window.getComputedStyle(isBoxGift).display);" \
-        #          "if(window.getComputedStyle(isBoxGift).display == 'none') {" \
-        #          "window.close();" \
-        #          "}" \
-        #          "if(collectButtonInsideInterval) {" \
-        #          "collectButtonInsideInterval.click();" \
-        #          "}" \
-        #          "}, 500);" \
-        #          "}" \
         script = "let button = document.querySelector('.pl-icon_danmu_open');" \
                  "if(button) button.click();" \
                  "collectInterval = setInterval(function(){" \
@@ -229,24 +200,9 @@ class Browser:
                  "if(collectBtn) collectBtn.click();" \
                  "if(window.getComputedStyle(isBoxGift).display == 'none') window.close();" \
                  "}, 1);"
+
         self.driver.execute_script(script)
 
-
-    # def checkIfLiveHasEgg(self):
-    #     js = "const boxGift = document.querySelector('.nimo-box-gift__box');" \
-    #          "console.log(boxGift);" \
-    #          "if(boxGift) return true"
-    #     return self.driver.execute_script(js)
-    # #
-    # def checkConsole(self):
-    #     script = "console.log('ok')"
-    #     self.driver.execute_script(script)
-    #
-
-    # def closeTabUsingScript(self):
-    #     script = "window.close()"
-    #     self.driver.execute_script(script)
-    #
     def switchToOriginalWindow(self):
         self.driver.switch_to.window(self.driver.window_handles[0])
 
