@@ -2,26 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
 from time import sleep
-import time
 from datetime import datetime
-import threading
-import os
-import signal
-import threading
 
 
 class Browser:
-    def __init__(self, url, tabDemand, timeTillNextTab, country, time):
+    def __init__(self, url, tabDemand, timeTillNextTab, country):
         self.tabDemand = tabDemand
         self.timeTillNextTab = timeTillNextTab
         self.country = str(country)
-        self.firstTime = True
-        self.time = int(time) * 60
-        # self.driver = webdriver.Firefox()
-        # self.driver.get(url)
-        # self.get_site_info()
-        # self.loginUsingCookies()
-        # self.readLiveUrl()
         while True:
             # create a Firefox browser instance object Options
             profile = webdriver.FirefoxProfile()
@@ -69,16 +57,9 @@ class Browser:
             profile.set_preference("permissions.default.image", 2)  # Image load disabled again
             # Start the Firefox browser with custom settings
             self.driver = webdriver.Firefox(firefox_profile=profile)
-            try:
-                self.driver.get(url)
-                self.get_site_info()
-                self.loginUsingCookies()
-                self.readLiveUrl()
-            except:
-                continue
-            finally:
-                self.driver.quit()
-
+            self.driver.get(url)
+            self.get_site_info()
+            self.readLiveUrl()
 
     def raiseFuckingException(self):
         return True
@@ -91,13 +72,11 @@ class Browser:
         print('thời gian bắt đầu chạy: ' + current_time)
 
     def loginUsingCookies(self):
-        self.driver.delete_all_cookies()
         with open('cookies/nimo.json', 'r') as f:
             data = json.load(f)
             for cookie in data["cookies"]:
                 cookie.pop('sameSite')
                 self.driver.add_cookie(cookie)
-        self.driver.refresh()
 
 
     def chooseCountry(self):
@@ -124,19 +103,7 @@ class Browser:
         self.driver.execute_script(script)
         sleep(4)
 
-    def destroyDriver(self):
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        print('Chạy lại vòng mới: ' + current_time)
-        try:
-            self.driver.quit()
-        except:
-            pass
-
-
     def readLiveUrl(self):
-        t = threading.Timer(self.time, self.destroyDriver)
-        t.start()
         self.chooseCountry()
         self.scrollToEnd()
         liveUrls = self.driver.find_elements(By.CSS_SELECTOR, ".nimo-rc_meta__info .controlZindex")
@@ -147,7 +114,11 @@ class Browser:
 
         livesTxt.close()
         self.controlLiveTab()
+
+
+
     def scrollToEnd(self):
+        breakPoint = 0
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         while True:
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -156,6 +127,10 @@ class Browser:
             if new_height == last_height:
                 break
             last_height = new_height
+            if breakPoint == 4:
+                break
+            breakPoint += 1
+
 
     def controlLiveTab(self):
         i = 0
@@ -167,18 +142,8 @@ class Browser:
         while True:
             if len(self.driver.window_handles) < int(self.tabDemand) + 1:
                 self.switchToOriginalWindow()
-                liveUrls = []
-                for handle in self.driver.window_handles:
-                    if handle == self.driver.window_handles[0]:
-                        continue
-                    try:
-                        self.driver.switch_to.window(handle)
-                        liveUrls.append(self.driver.current_url)
-                    except:
-                        continue
-
-                if lives[i] not in liveUrls:
-                    self.openLiveInNewTab(lives[i])
+                self.loginUsingCookies()
+                self.openLiveInNewTab(lives[i])
             i += 1
             if i == (len(lives) - 1):
                 i = 0

@@ -26,8 +26,7 @@ if chooseLink == "":
 tabDemand = input("Nhập số Tab cần chạy: ")
 timeTillNextTab = input("Nhập thời gian mở Tab mới: ")
 country = input("Nhập vùng cần chạy('vn', 'gl'): ")
-time = input("Thời gian khởi tạo lại: ")
-initBrowser.Browser(url, tabDemand, timeTillNextTab, country, time)
+initBrowser.Browser(url, tabDemand, timeTillNextTab, country)
 
 
 
