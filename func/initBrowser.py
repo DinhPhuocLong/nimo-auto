@@ -104,6 +104,8 @@ class Browser:
         sleep(4)
 
     def readLiveUrl(self):
+        self.driver.refresh()
+        sleep(4)
         self.chooseCountry()
         self.scrollToEnd()
         liveUrls = self.driver.find_elements(By.CSS_SELECTOR, ".nimo-rc_meta__info .controlZindex")
@@ -127,7 +129,7 @@ class Browser:
             if new_height == last_height:
                 break
             last_height = new_height
-            if breakPoint == 4:
+            if breakPoint == 2:
                 break
             breakPoint += 1
 
@@ -144,9 +146,12 @@ class Browser:
                 self.switchToOriginalWindow()
                 self.loginUsingCookies()
                 self.openLiveInNewTab(lives[i])
-            i += 1
+                i += 1
+
             if i == (len(lives) - 1):
-                i = 0
+                self.switchToOriginalWindow()
+                self.readLiveUrl()
+
 
     def openLiveInNewTab(self, url):
         self.driver.switch_to.new_window('tab')
