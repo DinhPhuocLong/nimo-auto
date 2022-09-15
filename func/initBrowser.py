@@ -104,6 +104,7 @@ class Browser:
         sleep(4)
 
     def readLiveUrl(self):
+        self.loginUsingCookies()
         self.driver.refresh()
         sleep(4)
         self.chooseCountry()
@@ -144,7 +145,6 @@ class Browser:
         while True:
             if len(self.driver.window_handles) < int(self.tabDemand) + 1:
                 self.switchToOriginalWindow()
-                self.loginUsingCookies()
                 self.openLiveInNewTab(lives[i])
                 i += 1
 
