@@ -72,6 +72,7 @@ class Browser:
         print('thời gian bắt đầu chạy: ' + current_time)
 
     def loginUsingCookies(self):
+        self.driver.delete_all_cookies()
         with open('cookies/nimo.json', 'r') as f:
             data = json.load(f)
             for cookie in data["cookies"]:
@@ -93,11 +94,27 @@ class Browser:
                   "if ((attr === 'Việt nam') || (attr === 'Vietnam')) {" \
                   " country.click();" \
                   " };" \
+                  "break;" \
                   "case 'gl':" \
                   "if ((attr === 'Toàn cầu') || (attr === 'Global')) {" \
                   "country.click();" \
                   " };" \
-                  "  };" \
+                  "break;" \
+                  "case 'tr':" \
+                  "if ((attr === 'Thổ Nhĩ Kỳ') || (attr === 'Turkey')) {" \
+                  "country.click();" \
+                  " };" \
+                  "break;" \
+                  "case 'mr':" \
+                  "if ((attr === 'Ma-rốc') || (attr === 'Morocco')) {" \
+                  "country.click();" \
+                  " };" \
+                  "case 'ind':" \
+                  "if ((attr === 'Indonesia') || (attr === 'Indonesia')) {" \
+                  "country.click();" \
+                  " };" \
+                  "break;" \
+                  " };" \
                   "" \
                   "});"
         self.driver.execute_script(script)
@@ -143,12 +160,14 @@ class Browser:
                 lives.append(live.rstrip())
 
         while True:
-            if len(self.driver.window_handles) < int(self.tabDemand) + 1:
-                self.switchToOriginalWindow()
-                self.openLiveInNewTab(lives[i])
-                i += 1
+            # print(i, '---------------', len(lives))
+            if i != len(lives) - 1:
+                if len(self.driver.window_handles) < int(self.tabDemand) + 1:
+                    self.switchToOriginalWindow()
+                    self.openLiveInNewTab(lives[i])
+                    i += 1
 
-            if i == (len(lives) - 1):
+            if i == len(lives) - 1 and len(self.driver.window_handles) == 1:
                 self.switchToOriginalWindow()
                 self.readLiveUrl()
 

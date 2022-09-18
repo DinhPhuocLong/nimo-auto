@@ -3,7 +3,7 @@ from time import sleep
 from func import initBrowser
 
 url = ""
-chooseLink = input("all - nimoshow - gta5 - lol - pugb - pugbm - csgo - luachua: ")
+chooseLink = input("all - nimoshow - gta5 - lol - pubg - pubgm - csgo - luachua: ")
 if chooseLink == "all":
     url = "https://www.nimo.tv/lives"
 if chooseLink == "nimoshow":
@@ -15,7 +15,7 @@ if chooseLink == "lol":
 if chooseLink == "pubg":
     url = "https://www.nimo.tv/game/pubg"
 if chooseLink == "pubgm":
-    url = "https://www.nimo.tv/game/pubg"
+    url = "https://www.nimo.tv/game/pubgm"
 if chooseLink == "csgo":
     url = "https://www.nimo.tv/game/csgo"
 if chooseLink == "luachua":
@@ -25,7 +25,7 @@ if chooseLink == "":
 
 tabDemand = input("Nhập số Tab cần chạy: ")
 timeTillNextTab = input("Nhập thời gian mở Tab mới: ")
-country = input("Nhập vùng cần chạy('vn', 'gl'): ")
+country = input("Nhập vùng cần chạy('vn', 'gl', 'tr', 'mr', 'ind'): ")
 initBrowser.Browser(url, tabDemand, timeTillNextTab, country)
 
 
