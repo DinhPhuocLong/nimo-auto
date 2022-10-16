@@ -1,8 +1,10 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 import json
 from time import sleep
 from datetime import datetime
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class Browser:
@@ -59,6 +61,7 @@ class Browser:
             self.driver = webdriver.Firefox(firefox_profile=profile)
             self.driver.get(url)
             self.get_site_info()
+            self.loginUsingUsernamePassword()
             self.readLiveUrl()
 
     def raiseFuckingException(self):
@@ -79,6 +82,38 @@ class Browser:
                 cookie.pop('sameSite')
                 self.driver.add_cookie(cookie)
 
+    def loginUsingUsernamePassword(self):
+        code = ""
+        username = ""
+        password = ""
+        with open("./info.json", 'r') as f:
+            data = json.load(f)
+            if data["code"] == 66:
+                code = "Thailand"
+            if data["code"] == 84:
+                code = "Vietnam"
+            username = data["username"]
+            password = data["password"]
+
+        sleep(1)
+        loginButton = self.driver.find_element(By.XPATH, "/html/body/div[2]/div[1]/div/div[2]/div/div[2]/button")
+        loginButton.click()
+        sleep(1)
+        dropDown = self.driver.find_element(By.CLASS_NAME, "nimo-area-code")
+        dropDown.click()
+        sleep(1)
+        countryPath = '//div[text()="' + code + '"]'
+        countryCode = self.driver.find_element(By.XPATH, countryPath)
+        countryCode.click()
+        sleep(1)
+        userName = self.driver.find_element(By.CLASS_NAME, "phone-number-input")
+        userName.click()
+        actions = ActionChains(self.driver)
+        actions.send_keys(username)
+        actions.send_keys(Keys.TAB)
+        actions.send_keys(password)
+        actions.send_keys(Keys.ENTER)
+        actions.perform()
 
     def chooseCountry(self):
         self.driver.maximize_window()
@@ -121,8 +156,6 @@ class Browser:
         sleep(4)
 
     def readLiveUrl(self):
-        self.loginUsingCookies()
-        self.driver.refresh()
         sleep(4)
         self.chooseCountry()
         self.scrollToEnd()
